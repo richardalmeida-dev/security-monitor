@@ -1,0 +1,8 @@
+security-monitor:
+  api-key: dev-local-key
+  simulator:
+    enabled: true
+
+logging:
+  level:
+    com.conex.securitymonitor: DEBUG

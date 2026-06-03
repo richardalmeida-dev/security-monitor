@@ -1,0 +1,11 @@
+# Perfil de produção (opt-in via SPRING_PROFILES_ACTIVE=prod).
+# Não há default de api-key aqui: ela TEM de vir de env var (SECURITY_MONITOR_API_KEY).
+# AppProperties faz fail-closed no startup se ela estiver vazia neste perfil.
+security-monitor:
+  api-key: ${SECURITY_MONITOR_API_KEY:}
+  simulator:
+    enabled: false
+
+logging:
+  level:
+    com.conex.securitymonitor: INFO

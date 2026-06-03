@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>security-monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">◢</span>
+      <span class="brand-name">security-monitor</span>
+    </div>
+    <div class="topbar-meta">
+      <div class="live" role="status" aria-live="polite" id="live">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="live-text" id="live-text">CONECTANDO</span>
+      </div>
+      <div class="env-badge" title="Os dados exibidos vêm do simulador embutido — não há tráfego real.">
+        DEV · DADOS SIMULADOS
+      </div>
+      <div class="updated" id="updated" aria-label="Última atualização">—</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="kpis" aria-label="Indicadores principais">
+      <article class="kpi" id="kpi-events">
+        <div class="kpi-label">EVENTOS</div>
+        <div class="kpi-value" id="m-total-events">—</div>
+        <div class="kpi-hint">total ingerido</div>
+      </article>
+      <article class="kpi" id="kpi-alerts">
+        <div class="kpi-label">ALERTAS</div>
+        <div class="kpi-value" id="m-total-alerts">—</div>
+        <div class="kpi-hint">acumulado</div>
+      </article>
+      <article class="kpi" id="kpi-fail">
+        <div class="kpi-label">FALHAS DE LOGIN</div>
+        <div class="kpi-value" id="m-login-fail">—</div>
+        <div class="kpi-hint">total</div>
+      </article>
+      <article class="kpi" id="kpi-fail-1h">
+        <div class="kpi-label">FALHAS · 60 MIN</div>
+        <div class="kpi-value" id="m-login-fail-1h">—</div>
+        <div class="kpi-hint">janela móvel</div>
+      </article>
+    </section>
+
+    <section class="block" aria-label="Alertas em aberto">
+      <div class="block-head">
+        <h2>ALERTAS</h2>
+        <span class="muted" id="alerts-count" aria-label="quantidade de alertas">0</span>
+      </div>
+      <div class="alerts" id="alerts-list" role="list"></div>
+      <div class="empty" id="alerts-empty" hidden>
+        <span class="empty-mark">●</span> Nenhum alerta — sistema nominal.
+      </div>
+    </section>
+
+    <section class="block" aria-label="Distribuição do feed atual">
+      <div class="block-head">
+        <h2>DISTRIBUIÇÃO</h2>
+        <span class="muted">do feed atual</span>
+      </div>
+      <div class="dist">
+        <div class="dist-col">
+          <div class="dist-title">POR FONTE</div>
+          <div class="dist-bars" id="dist-source" aria-live="off"></div>
+        </div>
+        <div class="dist-col">
+          <div class="dist-title">POR TIPO</div>
+          <div class="dist-bars" id="dist-type" aria-live="off"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-label="Eventos recentes">
+      <div class="block-head">
+        <h2>EVENTOS</h2>
+        <div class="filters" role="toolbar" aria-label="Filtros de eventos">
+          <div class="chip-group" role="group" aria-label="Filtrar por fonte">
+            <button type="button" class="chip src-APP is-on" data-filter="source" data-val="APP" aria-pressed="true">APP</button>
+            <button type="button" class="chip src-ADMIN_PANEL is-on" data-filter="source" data-val="ADMIN_PANEL" aria-pressed="true">ADMIN</button>
+            <button type="button" class="chip src-FINANCIAL is-on" data-filter="source" data-val="FINANCIAL" aria-pressed="true">FINANCIAL</button>
+          </div>
+          <label class="visually-hidden" for="filter-type">Filtrar por tipo</label>
+          <select id="filter-type" class="select" aria-label="Filtrar por tipo">
+            <option value="">todos os tipos</option>
+            <option value="LOGIN_SUCCESS">LOGIN_SUCCESS</option>
+            <option value="LOGIN_FAILURE">LOGIN_FAILURE</option>
+            <option value="LOGOUT">LOGOUT</option>
+            <option value="ACCESS_GRANTED">ACCESS_GRANTED</option>
+            <option value="ACCESS_DENIED">ACCESS_DENIED</option>
+            <option value="SENSITIVE_ACTION">SENSITIVE_ACTION</option>
+          </select>
+          <label class="visually-hidden" for="filter-search">Buscar por IP ou usuário</label>
+          <input id="filter-search" class="search" type="search" placeholder="ip ou usuário…" autocomplete="off">
+          <span class="muted" id="events-count" aria-label="quantidade exibida">0</span>
+        </div>
+      </div>
+      <div class="table-wrap" id="events-wrap">
+        <table id="events-table">
+          <thead>
+            <tr>
+              <th scope="col">QUANDO</th>
+              <th scope="col">TIPO</th>
+              <th scope="col">FONTE</th>
+              <th scope="col">USUÁRIO</th>
+              <th scope="col">IP</th>
+              <th scope="col">PAÍS · CIDADE</th>
+              <th scope="col">DETALHES</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="empty" id="events-empty" hidden>Nenhum evento corresponde aos filtros.</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

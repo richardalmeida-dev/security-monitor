@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: security-monitor-db
+    environment:
+      POSTGRES_DB: securitymonitor
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    # Mapeamento de porta externo para Postgres — descomente se for usar um cliente externo (DBeaver/psql).
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d securitymonitor"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    container_name: security-monitor-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/securitymonitor
+      SPRING_DATASOURCE_USERNAME: app
+      SPRING_DATASOURCE_PASSWORD: app
+      # GEOIP_DB_PATH default não existe — serviço sobe com fallback UNKNOWN.
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:
