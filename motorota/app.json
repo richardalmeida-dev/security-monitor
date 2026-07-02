@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "MotoRota",
+    "slug": "motorota",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "backgroundColor": "#0d1117",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.motorota.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Usamos sua localização para definir o ponto de partida da rota de entregas."
+      }
+    },
+    "android": {
+      "package": "com.motorota.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Usamos sua localização para definir o ponto de partida da rota de entregas."
+        }
+      ]
+    ]
+  }
+}
