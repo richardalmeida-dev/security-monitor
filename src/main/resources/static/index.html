@@ -3,103 +3,146 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>security-monitor</title>
+  <title>Monitoramento de segurança</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar" role="banner">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">◢</span>
-      <span class="brand-name">security-monitor</span>
+      <div class="brand-block">
+        <span class="brand-name">Monitoramento de segurança</span>
+        <span class="brand-sub">Eventos das aplicações em tempo real, com detecção de atividade suspeita.</span>
+      </div>
     </div>
     <div class="topbar-meta">
       <div class="live" role="status" aria-live="polite" id="live">
         <span class="live-dot" aria-hidden="true"></span>
         <span class="live-text" id="live-text">CONECTANDO</span>
       </div>
-      <div class="env-badge" title="Os dados exibidos vêm do simulador embutido — não há tráfego real.">
+      <div class="env-badge" title="Os dados exibidos vêm do simulador embutido, não há tráfego real.">
         DEV · DADOS SIMULADOS
       </div>
-      <div class="updated" id="updated" aria-label="Última atualização">—</div>
+      <div class="updated" id="updated" aria-label="Última atualização"></div>
     </div>
   </header>
 
   <main>
-    <section class="kpis" aria-label="Indicadores principais">
-      <article class="kpi" id="kpi-events">
-        <div class="kpi-label">EVENTOS</div>
-        <div class="kpi-value" id="m-total-events">—</div>
-        <div class="kpi-hint">total ingerido</div>
-      </article>
-      <article class="kpi" id="kpi-alerts">
-        <div class="kpi-label">ALERTAS</div>
-        <div class="kpi-value" id="m-total-alerts">—</div>
-        <div class="kpi-hint">acumulado</div>
-      </article>
-      <article class="kpi" id="kpi-fail">
-        <div class="kpi-label">FALHAS DE LOGIN</div>
-        <div class="kpi-value" id="m-login-fail">—</div>
-        <div class="kpi-hint">total</div>
-      </article>
-      <article class="kpi" id="kpi-fail-1h">
-        <div class="kpi-label">FALHAS · 60 MIN</div>
-        <div class="kpi-value" id="m-login-fail-1h">—</div>
-        <div class="kpi-hint">janela móvel</div>
-      </article>
-    </section>
-
-    <section class="block" aria-label="Alertas em aberto">
-      <div class="block-head">
-        <h2>ALERTAS</h2>
-        <span class="muted" id="alerts-count" aria-label="quantidade de alertas">0</span>
-      </div>
-      <div class="alerts" id="alerts-list" role="list"></div>
-      <div class="empty" id="alerts-empty" hidden>
-        <span class="empty-mark">●</span> Nenhum alerta — sistema nominal.
+    <!-- Status geral -->
+    <section id="overall-status" class="status-banner status-ok" aria-live="polite">
+      <span class="status-icon" id="status-icon" aria-hidden="true"></span>
+      <div class="status-text">
+        <strong id="status-title">Tudo nominal.</strong>
+        <span id="status-sub" class="status-sub">Nenhum alerta ativo no momento.</span>
       </div>
     </section>
 
-    <section class="block" aria-label="Distribuição do feed atual">
-      <div class="block-head">
-        <h2>DISTRIBUIÇÃO</h2>
-        <span class="muted">do feed atual</span>
+    <!-- VISÃO GERAL -->
+    <section class="section section-overview" aria-label="Visão geral">
+      <div class="section-head">
+        <h2 class="section-title">Visão geral</h2>
+        <p class="section-sub">Estado agora; números que crescem conforme novos eventos chegam.</p>
       </div>
-      <div class="dist">
-        <div class="dist-col">
-          <div class="dist-title">POR FONTE</div>
-          <div class="dist-bars" id="dist-source" aria-live="off"></div>
-        </div>
-        <div class="dist-col">
-          <div class="dist-title">POR TIPO</div>
-          <div class="dist-bars" id="dist-type" aria-live="off"></div>
-        </div>
+      <div class="kpis">
+        <article class="kpi" id="kpi-events" title="Total de eventos que o serviço já recebeu desde o boot. Inclui sucesso, falha e ações sensíveis.">
+          <div class="kpi-label">EVENTOS</div>
+          <div class="kpi-value" id="m-total-events">0</div>
+          <div class="kpi-hint">total ingerido</div>
+        </article>
+        <article class="kpi" id="kpi-alerts" title="Quantos alertas a detecção já abriu (ex.: brute force). Cresce conforme padrões suspeitos aparecem.">
+          <div class="kpi-label">ALERTAS</div>
+          <div class="kpi-value" id="m-total-alerts">0</div>
+          <div class="kpi-hint">acumulado</div>
+        </article>
+        <article class="kpi" id="kpi-fail" title="Quantas falhas de login foram registradas no total, desde o boot do serviço.">
+          <div class="kpi-label">FALHAS DE LOGIN</div>
+          <div class="kpi-value" id="m-login-fail">0</div>
+          <div class="kpi-hint">total</div>
+        </article>
+        <article class="kpi" id="kpi-fail-1h" title="Falhas de login na última hora (janela móvel). Bom indicador da pressão recente de ataque.">
+          <div class="kpi-label">FALHAS · 60 MIN</div>
+          <div class="kpi-value" id="m-login-fail-1h">0</div>
+          <div class="kpi-hint">janela móvel</div>
+        </article>
       </div>
-    </section>
 
-    <section class="block" aria-label="Eventos recentes">
-      <div class="block-head">
-        <h2>EVENTOS</h2>
-        <div class="filters" role="toolbar" aria-label="Filtros de eventos">
-          <div class="chip-group" role="group" aria-label="Filtrar por fonte">
-            <button type="button" class="chip src-APP is-on" data-filter="source" data-val="APP" aria-pressed="true">APP</button>
-            <button type="button" class="chip src-ADMIN_PANEL is-on" data-filter="source" data-val="ADMIN_PANEL" aria-pressed="true">ADMIN</button>
-            <button type="button" class="chip src-FINANCIAL is-on" data-filter="source" data-val="FINANCIAL" aria-pressed="true">FINANCIAL</button>
+      <!-- Painel: por sistema (cruzando eventos e alertas pela janela atual) -->
+      <div class="panel-head">
+        <span class="panel-title">Por sistema</span>
+        <span class="panel-sub">na janela atual; vermelho marca quem mais sofreu falhas ou alertas.</span>
+      </div>
+      <div class="by-source" id="by-source"></div>
+
+      <!-- Painel: taxa de login + resumo de alertas -->
+      <div class="overview-extras">
+        <article class="card-extra" id="login-rate" aria-label="Taxa de login">
+          <div class="card-extra-head">
+            <span class="card-extra-title">Taxa de login</span>
+            <span class="card-extra-sub">sucesso contra falha na janela atual</span>
           </div>
-          <label class="visually-hidden" for="filter-type">Filtrar por tipo</label>
-          <select id="filter-type" class="select" aria-label="Filtrar por tipo">
-            <option value="">todos os tipos</option>
-            <option value="LOGIN_SUCCESS">LOGIN_SUCCESS</option>
-            <option value="LOGIN_FAILURE">LOGIN_FAILURE</option>
-            <option value="LOGOUT">LOGOUT</option>
-            <option value="ACCESS_GRANTED">ACCESS_GRANTED</option>
-            <option value="ACCESS_DENIED">ACCESS_DENIED</option>
-            <option value="SENSITIVE_ACTION">SENSITIVE_ACTION</option>
-          </select>
-          <label class="visually-hidden" for="filter-search">Buscar por IP ou usuário</label>
-          <input id="filter-search" class="search" type="search" placeholder="ip ou usuário…" autocomplete="off">
-          <span class="muted" id="events-count" aria-label="quantidade exibida">0</span>
+          <div class="card-extra-body" id="login-rate-body">
+            <div class="muted">sem dados de login na janela.</div>
+          </div>
+        </article>
+        <article class="card-extra" id="alert-summary" aria-label="Resumo de alertas">
+          <div class="card-extra-head">
+            <span class="card-extra-title">Resumo de alertas</span>
+            <span class="card-extra-sub">contagem por tipo e severidade</span>
+          </div>
+          <div class="card-extra-body" id="alert-summary-body">
+            <div class="muted">nenhum alerta no momento.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ALERTAS -->
+    <section class="section section-alerts" aria-label="Alertas">
+      <div class="section-head">
+        <h2 class="section-title"><span class="section-ico" id="ico-alerts"></span>Alertas</h2>
+        <p class="section-sub">Marcado pela detecção como suspeito. Vermelho quer dizer agora.</p>
+        <span class="muted section-tally" id="alerts-count" aria-label="quantidade de alertas">0</span>
+      </div>
+      <div class="block-body">
+        <div class="alerts" id="alerts-list" role="list"></div>
+        <div class="empty" id="alerts-empty" hidden>
+          <span class="empty-mark">●</span> Nenhum alerta. Sistema nominal.
         </div>
       </div>
+    </section>
+
+    <!-- ATIVIDADE -->
+    <section class="section section-activity" aria-label="Atividade">
+      <div class="section-head">
+        <h2 class="section-title">Atividade</h2>
+        <p class="section-sub">Tudo que foi ingerido, do mais recente para o mais antigo. Use os filtros pra focar.</p>
+        <span class="muted section-tally" id="events-count" aria-label="quantidade exibida">0</span>
+      </div>
+
+      <div class="activity-summary" id="activity-summary">
+        Carregando resumo da última hora.
+      </div>
+
+      <div class="filters" role="toolbar" aria-label="Filtros de eventos">
+        <div class="chip-group" role="group" aria-label="Filtrar por fonte">
+          <button type="button" class="chip src-APP is-on" data-filter="source" data-val="APP" aria-pressed="true">APP</button>
+          <button type="button" class="chip src-ADMIN_PANEL is-on" data-filter="source" data-val="ADMIN_PANEL" aria-pressed="true">ADMIN</button>
+          <button type="button" class="chip src-FINANCIAL is-on" data-filter="source" data-val="FINANCIAL" aria-pressed="true">FINANCIAL</button>
+        </div>
+        <label class="visually-hidden" for="filter-type">Filtrar por tipo</label>
+        <select id="filter-type" class="select" aria-label="Filtrar por tipo">
+          <option value="">todos os tipos</option>
+          <option value="LOGIN_SUCCESS">Login ok</option>
+          <option value="LOGIN_FAILURE">Falha de login</option>
+          <option value="LOGOUT">Logout</option>
+          <option value="ACCESS_GRANTED">Acesso concedido</option>
+          <option value="ACCESS_DENIED">Acesso negado</option>
+          <option value="SENSITIVE_ACTION">Ação sensível</option>
+        </select>
+        <label class="visually-hidden" for="filter-search">Buscar por IP ou usuário</label>
+        <input id="filter-search" class="search" type="search" placeholder="ip ou usuário…" autocomplete="off">
+      </div>
+
       <div class="table-wrap" id="events-wrap">
         <table id="events-table">
           <thead>
@@ -109,13 +152,78 @@
               <th scope="col">FONTE</th>
               <th scope="col">USUÁRIO</th>
               <th scope="col">IP</th>
-              <th scope="col">PAÍS · CIDADE</th>
+              <th scope="col"><span class="th-geo" id="th-geo"></span>PAÍS · CIDADE</th>
               <th scope="col">DETALHES</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
-        <div class="empty" id="events-empty" hidden>Nenhum evento corresponde aos filtros.</div>
+        <div class="empty" id="events-empty" hidden>Sem eventos ainda.</div>
+      </div>
+    </section>
+
+    <!-- TENDÊNCIA -->
+    <section class="section section-trend" aria-label="Tendência">
+      <div class="section-head">
+        <h2 class="section-title">Tendência</h2>
+        <p class="section-sub">Como a atividade se comporta no tempo e onde ela se concentra.</p>
+      </div>
+
+      <div class="trend-grid">
+        <div class="trend-chart-block">
+          <div class="trend-block-head">
+            <span class="trend-block-title">Atividade por minuto</span>
+            <span class="trend-block-sub">últimos 15 min, barras vermelhas marcam falhas e acessos negados</span>
+          </div>
+          <div class="chart-activity" id="chart-activity" role="img" aria-label="Eventos por minuto"></div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot dot-total"></span>todos os eventos</span>
+            <span class="legend-item"><span class="legend-dot dot-fail"></span>falhas e negados</span>
+          </div>
+        </div>
+
+        <div class="trend-dist-block">
+          <div class="trend-block-head">
+            <span class="trend-block-title">Distribuição do feed atual</span>
+            <span class="trend-block-sub">proporção dos eventos que estão na tabela</span>
+          </div>
+          <div class="dist">
+            <div class="dist-col">
+              <div class="dist-title">POR FONTE</div>
+              <div class="dist-bars" id="dist-source" aria-live="off"></div>
+            </div>
+            <div class="dist-col">
+              <div class="dist-title">POR TIPO</div>
+              <div class="dist-bars" id="dist-type" aria-live="off"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel: Top IPs ofensores -->
+      <div class="top-ips-block">
+        <div class="trend-block-head">
+          <span class="trend-block-title">Top IPs ofensores</span>
+          <span class="trend-block-sub">quem mais bateu na porta na janela atual; vermelho indica que o IP já gerou alerta.</span>
+        </div>
+        <ol class="top-ips" id="top-ips"></ol>
+      </div>
+
+      <!-- Legenda geral de cores -->
+      <div class="legend" aria-label="Legenda de cores">
+        <div class="legend-group">
+          <span class="legend-label">TIPO:</span>
+          <span class="legend-item"><span class="legend-dot dot-ok"></span>Sucesso</span>
+          <span class="legend-item"><span class="legend-dot dot-fail"></span>Falha ou negado</span>
+          <span class="legend-item"><span class="legend-dot dot-warn"></span>Ação sensível</span>
+        </div>
+        <div class="legend-sep" aria-hidden="true"></div>
+        <div class="legend-group">
+          <span class="legend-label">FONTE:</span>
+          <span class="legend-item"><span class="legend-dot dot-app"></span>APP</span>
+          <span class="legend-item"><span class="legend-dot dot-admin"></span>ADMIN_PANEL</span>
+          <span class="legend-item"><span class="legend-dot dot-fin"></span>FINANCIAL</span>
+        </div>
       </div>
     </section>
   </main>

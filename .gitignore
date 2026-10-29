@@ -41,3 +41,24 @@ GeoLite2-City.mmdb
 
 ### Local agent / IDE state ###
 .claude/
+node_modules/
+.venv/
+venv/
+__pycache__/
+build/
+dist/
+.next/
+.turbo/
+.dart_tool/
+.gradle/
+.expo/
+bin/
+obj/
+coverage/
+*.jks
+*.keystore
+.wwebjs_auth/
+.wwebjs_cache/
+**/flutter/ephemeral/
+release/
+*.pdb
